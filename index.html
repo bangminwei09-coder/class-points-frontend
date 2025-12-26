@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班级积分管理系统</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+    <div id="app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="app-logo"></div>
+                <h1 class="app-title">班级积分</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#students" class="nav-item active" data-page="students"><span class="icon">👥</span>学生管理</a></li>
+                    <li><a href="#groups" class="nav-item" data-page="groups"><span class="icon">👪</span>小组管理</a></li>
+                    <li><a href="#ranking" class="nav-item" data-page="ranking"><span class="icon">🏆</span>班级排名</a></li>
+                    <li><a href="#points" class="nav-item" data-page="points"><span class="icon">📋</span>积分规则</a></li>
+                    <li><a href="#shop" class="nav-item" data-page="shop"><span class="icon">🛒</span>积分商城</a></li>
+                    <li><a href="#statistics" class="nav-item" data-page="statistics"><span class="icon">📊</span>数据统计</a></li>
+                    <li><a href="#import-export" class="nav-item" data-page="import-export"><span class="icon">📁</span>导入导出</a></li>
+                    <li><a href="#settings" class="nav-item" data-page="settings"><span class="icon">⚙️</span>系统设置</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="btn btn-secondary" id="toggleThemeBtn"><span class="icon">🌓</span>切换主题</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-left">
+                    <h2 class="page-title" id="currentPageTitle">学生管理</h2>
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" class="form-control" placeholder="搜索学生姓名或学号">
+                        <button class="btn btn-secondary" id="searchBtn"><span class="icon">🔍</span>搜索</button>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-primary" id="projectionModeBtn"><span class="icon">📺</span>投影模式</button>
+                </div>
+            </header>
+
+            <div class="page-content-wrapper">
+                <!-- 学生管理页面 -->
+                <div id="studentsPage" class="page-content active">
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <button class="btn btn-success" id="addStudentBtn"><span class="icon">➕</span>新增学生</button>
+                            <button class="btn btn-secondary" id="toggleSelectAllBtn">全选</button>
+                        </div>
+                        <div class="toolbar-right">
+                            <button class="btn btn-danger" id="batchDeleteBtn" disabled><span class="icon">🗑️</span>批量删除</button>
+                            <button class="btn btn-success" id="batchAddPointsBtn" disabled><span class="icon">➕</span>批量加分</button>
+                            <button class="btn btn-warning" id="batchReducePointsBtn" disabled><span class="icon">➖</span>批量减分</button>
+                        </div>
+                    </div>
+                    <div id="studentList">
+                        <!-- 动态生成学生卡片 -->
+                    </div>
+                </div>
+
+                <!-- 小组管理页面 -->
+                <div id="groupsPage" class="page-content">
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <h2 class="page-title">小组管理</h2>
+                        </div>
+                        <div class="toolbar-right">
+                            <button class="btn btn-success" id="addGroupBtn"><span class="icon">➕</span>新增小组</button>
+                        </div>
+                    </div>
+                    <div class="groups-grid" id="groupsContainer">
+                        <!-- 动态生成小组卡片 -->
+                    </div>
+                </div>
+
+                <!-- 班级排名页面 -->
+                <div id="rankingPage" class="page-content">
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <h2 class="page-title">班级排名</h2>
+                        </div>
+                        <div class="toolbar-right">
+                            <button class="btn btn-primary" id="totalRankingBtn"><span class="icon">🏆</span>总积分榜</button>
+                            <button class="btn btn-secondary" id="progressRankingBtn"><span class="icon">📈</span>进步排行榜</button>
+                        </div>
+                    </div>
+                    <div id="rankingList" class="ranking-container">
+                        <!-- 班级排名将在这里动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 积分规则页面 -->
+                <div id="pointsPage" class="page-content">
+                    <h2 class="page-title">积分规则</h2>
+                    <div id="rulesContent">
+                        <button id="addRuleBtn" class="btn btn-success"><span class="icon">➕</span>新增规则</button>
+                        <div id="rulesList" class="rules-container"></div>
+                    </div>
+                </div>
+
+                <!-- 积分商城页面 -->
+                <div id="shopPage" class="page-content">
+                    <h2 class="page-title">积分商城</h2>
+                    <div id="shopContent">
+                        <button id="addGoodBtn" class="btn btn-success"><span class="icon">➕</span>新增商品</button>
+                        <div id="goodsList" class="goods-container"></div>
+                    </div>
+                </div>
+
+                <!-- 数据统计页面 -->
+                <div id="statisticsPage" class="page-content">
+                    <h2 class="page-title">数据统计</h2>
+                    <div id="statisticsContent"></div>
+                </div>
+
+                <!-- 导入导出页面 -->
+                <div id="import-exportPage" class="page-content">
+                    <h2 class="page-title">导入导出</h2>
+                    <div class="import-export-container">
+                        <h3>数据导入</h3>
+                        <p>选择文件导入学生数据或积分记录。</p>
+                        <input type="file" id="importFileInput" accept=".json, .xlsx, .csv">
+                        <button id="importBtn" class="btn btn-primary"><span class="icon">📥</span>开始导入</button>
+
+                        <h3 style="margin-top: 20px;">数据导出</h3>
+                        <p>导出所有学生数据、积分记录或小组数据。</p>
+                        <button id="exportStudentsJsonBtn" class="btn btn-primary"><span class="icon">📤</span>导出学生数据 (JSON)</button>
+                        <button id="exportGroupsJsonBtn" class="btn btn-primary"><span class="icon">📤</span>导出小组数据 (JSON)</button>
+                        <button id="exportAllDataJsonBtn" class="btn btn-primary"><span class="icon">📤</span>导出全部数据 (JSON)</button>
+                        <button id="exportStudentsExcelBtn" class="btn btn-primary" disabled><span class="icon">📊</span>导出学生数据 (Excel)</button>
+                        <button id="exportRankingPdfBtn" class="btn btn-primary" disabled><span class="icon">📄</span>导出排名报告 (PDF)</button>
+                    </div>
+                </div>
+
+                <!-- 系统设置页面 -->
+                <div id="settingsPage" class="page-content">
+                    <h2 class="page-title">系统设置</h2>
+                    <div id="settingsContent">
+                        <p>更多系统设置功能开发中...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="modalContainer"></div>
+    <div id="toastContainer"></div>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/rules.js"></script>
+    <script src="js/student.js"></script>
+    <script src="js/points.js"></script>
+    <script src="js/ranking.js"></script>
+    <script src="js/group.js"></script>
+    <script src="js/shop.js"></script>
+    <script src="js/statistics.js"></script>
+    <script src="js/import.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
+

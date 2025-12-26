@@ -1,0 +1,23 @@
+/* 定义黑暗主题变量 */
+.dark-theme {
+    --primary-color: #A78BFA; /* 浅紫 */
+    --secondary-color: #F472B6; /* 浅粉 */
+    --accent-color: #60A5FA; /* 浅蓝 */
+    --success-color: #34D399; /* 浅绿 */
+    --warning-color: #FBBF24; /* 浅橙 */
+    --danger-color: #F87171; /* 浅红 */
+
+    --text-primary: #E5E7EB; /* 亮灰 */
+    --text-secondary: #D1D5DB; /* 中亮灰 */
+    --text-tertiary: #9CA3AF; /* 暗亮灰 */
+    --white: #2D3748; /* 暗色背景下模拟白色 */
+    --black: #F9FAFB;
+
+    --bg-primary: #1A202C; /* 深蓝灰背景 */
+    --bg-secondary: #2D3748; /* 中深蓝灰背景 */
+    --border-color: #4A5568; /* 暗色边框 */
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+}

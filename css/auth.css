@@ -1,0 +1,206 @@
+/* 登录页面样式 */
+#loginContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.login-wrapper {
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+}
+
+.login-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-header {
+    text-align: center;
+    padding: 40px 30px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.login-logo {
+    font-size: 4rem;
+    margin-bottom: 10px;
+}
+
+.login-header h1 {
+    margin: 0 0 10px;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.login-header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.login-tabs {
+    display: flex;
+    background: #f5f5f5;
+    padding: 0;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.tab-btn.active {
+    color: #667eea;
+    background: white;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #667eea;
+}
+
+.login-form {
+    display: none;
+    padding: 30px;
+}
+
+.login-form.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.login-form .form-group {
+    margin-bottom: 20px;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.login-form .form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+
+.login-form .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    outline: none;
+}
+
+.btn-block {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.login-footer {
+    padding: 20px 30px;
+    background: #f9f9f9;
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+}
+
+.login-footer p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* 用户信息显示 */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    margin-bottom: 15px;
+}
+
+.user-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.user-details {
+    flex: 1;
+}
+
+.user-name {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.user-class {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+#logoutBtn {
+    margin-top: 10px;
+}
