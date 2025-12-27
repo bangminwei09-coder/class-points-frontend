@@ -288,6 +288,25 @@ class CloudStorage {
     throw new Error(response.message || '删除商品失败');
   }
 
+  // ==================== 初始化数据加载 ====================
+  
+  async initCloudData() {
+    console.log('🔄 正在从云端加载所有数据...');
+    try {
+      await Promise.all([
+        this.getStudents(),
+        this.getGroups(),
+        this.getRules(),
+        this.getShopItems()
+      ]);
+      console.log('✅ 云端数据初始化完成');
+      return true;
+    } catch (error) {
+      console.error('❌ 云端数据初始化失败:', error);
+      return false;
+    }
+  }
+
   // ==================== 数据导入导出 API ====================
   
   async exportData() {

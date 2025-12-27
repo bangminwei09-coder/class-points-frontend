@@ -4,6 +4,66 @@
 
   const API_BASE = 'https://class-points-backend-production.up.railway.app/api';
 
+  // 辅助函数
+  function showAuthError(msg) {
+    const errorEl = document.getElementById('authError');
+    if (errorEl) {
+      errorEl.textContent = msg;
+      errorEl.style.display = 'block';
+    }
+  }
+
+  function hideAuthError() {
+    const errorEl = document.getElementById('authError');
+    if (errorEl) {
+      errorEl.style.display = 'none';
+    }
+  }
+
+  function showAuthLoading() {
+    const loading = document.getElementById('authLoading');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    if (loading) loading.style.display = 'block';
+    if (loginForm) loginForm.style.display = 'none';
+    if (registerForm) registerForm.style.display = 'none';
+  }
+
+  function hideAuthLoading() {
+    const loading = document.getElementById('authLoading');
+    if (loading) loading.style.display = 'none';
+  }
+
+  function showMainApp() {
+    const overlay = document.getElementById('authOverlay');
+    const mainApp = document.getElementById('mainApp');
+    if (overlay) overlay.classList.add('hidden');
+    if (mainApp) mainApp.classList.add('show');
+  }
+
+  // 全局函数 - 登录注册界面切换
+  window.showAuthLogin = function() {
+    const tabs = document.querySelectorAll('.auth-tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    tabs[0].classList.add('active');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    if (loginForm) loginForm.style.display = 'block';
+    if (registerForm) registerForm.style.display = 'none';
+    hideAuthError();
+  };
+
+  window.showAuthRegister = function() {
+    const tabs = document.querySelectorAll('.auth-tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    tabs[1].classList.add('active');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    if (loginForm) loginForm.style.display = 'none';
+    if (registerForm) registerForm.style.display = 'block';
+    hideAuthError();
+  };
+
   // 创建登录界面HTML
   function createAuthOverlay() {
     const overlay = document.createElement('div');
@@ -78,58 +138,7 @@
     document.body.appendChild(mainApp);
   }
 
-  // 登录注册界面切换
-  window.showAuthLogin = function() {
-    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('registerForm').style.display = 'none';
-    hideAuthError();
-  };
 
-  window.showAuthRegister = function() {
-    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-    document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('registerForm').style.display = 'block';
-    hideAuthError();
-  };
-
-  function showAuthError(msg) {
-    const errorEl = document.getElementById('authError');
-    if (errorEl) {
-      errorEl.textContent = msg;
-      errorEl.style.display = 'block';
-    }
-  }
-
-  function hideAuthError() {
-    const errorEl = document.getElementById('authError');
-    if (errorEl) {
-      errorEl.style.display = 'none';
-    }
-  }
-
-  function showAuthLoading() {
-    const loading = document.getElementById('authLoading');
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    if (loading) loading.style.display = 'block';
-    if (loginForm) loginForm.style.display = 'none';
-    if (registerForm) registerForm.style.display = 'none';
-  }
-
-  function hideAuthLoading() {
-    const loading = document.getElementById('authLoading');
-    if (loading) loading.style.display = 'none';
-  }
-
-  function showMainApp() {
-    const overlay = document.getElementById('authOverlay');
-    const mainApp = document.getElementById('mainApp');
-    if (overlay) overlay.classList.add('hidden');
-    if (mainApp) mainApp.classList.add('show');
-  }
 
   // 登录处理
   window.handleAuthLogin = async function(e) {
