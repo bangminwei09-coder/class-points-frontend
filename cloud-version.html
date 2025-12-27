@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>班级积分管理系统 - 云端版</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <style>
+    /* 登录界面样式 */
+    #authOverlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+
+    #authOverlay.hidden {
+      display: none;
+    }
+
+    .auth-card {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .auth-title {
+      text-align: center;
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .auth-subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #eee;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      color: #666;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .auth-tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .auth-form-group {
+      margin-bottom: 20px;
+    }
+
+    .auth-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .auth-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #eee;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+    }
+
+    .auth-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .auth-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .auth-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .auth-hint {
+      text-align: center;
+      margin-top: 20px;
+      color: #999;
+      font-size: 12px;
+    }
+
+    .auth-error {
+      background: #fee;
+      color: #c33;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .auth-loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .auth-spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #registerForm {
+      display: none;
+    }
+
+    #mainApp {
+      display: none;
+    }
+
+    #mainApp.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- 登录注册界面 -->
+  <div id="authOverlay">
+    <div class="auth-card">
+      <h1 class="auth-title">📚 班级积分管理系统</h1>
+      <p class="auth-subtitle">教师登录 · 云端同步</p>
+
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="showAuthLogin()">登录</div>
+        <div class="auth-tab" onclick="showAuthRegister()">注册</div>
+      </div>
+
+      <div class="auth-error" id="authError"></div>
+      <div class="auth-loading" id="authLoading">
+        <div class="auth-spinner"></div>
+        <p style="margin-top: 10px; color: #666;">加载中...</p>
+      </div>
+
+      <!-- 登录表单 -->
+      <form id="loginForm" onsubmit="handleAuthLogin(event)">
+        <div class="auth-form-group">
+          <label class="auth-label">用户名</label>
+          <input type="text" class="auth-input" id="loginUsername" required placeholder="请输入用户名">
+        </div>
+        <div class="auth-form-group">
+          <label class="auth-label">密码</label>
+          <input type="password" class="auth-input" id="loginPassword" required placeholder="请输入密码">
+        </div>
+        <button type="submit" class="auth-btn">登录</button>
+        <p class="auth-hint">💡 提示：数据保存在云端，可在任何设备访问</p>
+      </form>
+
+      <!-- 注册表单 -->
+      <form id="registerForm" onsubmit="handleAuthRegister(event)">
+        <div class="auth-form-group">
+          <label class="auth-label">用户名</label>
+          <input type="text" class="auth-input" id="regUsername" required placeholder="请输入用户名">
+        </div>
+        <div class="auth-form-group">
+          <label class="auth-label">密码</label>
+          <input type="password" class="auth-input" id="regPassword" required placeholder="请输入密码（至少6位）" minlength="6">
+        </div>
+        <div class="auth-form-group">
+          <label class="auth-label">班级名称</label>
+          <input type="text" class="auth-input" id="regClassName" required placeholder="例如：四年级三班">
+        </div>
+        <div class="auth-form-group">
+          <label class="auth-label">邮箱（选填）</label>
+          <input type="email" class="auth-input" id="regEmail" placeholder="用于找回密码">
+        </div>
+        <button type="submit" class="auth-btn">注册</button>
+        <p class="auth-hint">💡 注册后即可开始使用云端同步功能</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- 主应用（旧版本界面将在这里加载） -->
+  <div id="mainApp">
+    <iframe id="appFrame" src="old-version.html" style="width:100%;height:100vh;border:none;"></iframe>
+  </div>
+
+  <script>
+    const API_BASE = 'https://class-points-backend-production.up.railway.app/api';
+    let authToken = null;
+    let currentUser = null;
+
+    // 登录注册界面切换
+    function showAuthLogin() {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('registerForm').style.display = 'none';
+      hideAuthError();
+    }
+
+    function showAuthRegister() {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('registerForm').style.display = 'block';
+      hideAuthError();
+    }
+
+    function showAuthError(msg) {
+      const errorEl = document.getElementById('authError');
+      errorEl.textContent = msg;
+      errorEl.style.display = 'block';
+    }
+
+    function hideAuthError() {
+      document.getElementById('authError').style.display = 'none';
+    }
+
+    function showAuthLoading() {
+      document.getElementById('authLoading').style.display = 'block';
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('registerForm').style.display = 'none';
+    }
+
+    function hideAuthLoading() {
+      document.getElementById('authLoading').style.display = 'none';
+    }
+
+    // 登录处理
+    async function handleAuthLogin(e) {
+      e.preventDefault();
+      hideAuthError();
+      showAuthLoading();
+
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const response = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.data.token) {
+          authToken = data.data.token;
+          currentUser = data.data.user;
+          localStorage.setItem('auth_token', authToken);
+          localStorage.setItem('user_info', JSON.stringify(currentUser));
+          
+          // 隐藏登录界面，显示主应用
+          document.getElementById('authOverlay').classList.add('hidden');
+          document.getElementById('mainApp').classList.add('show');
+        } else {
+          hideAuthLoading();
+          showAuthLogin();
+          showAuthError(data.message || '登录失败');
+        }
+      } catch (error) {
+        hideAuthLoading();
+        showAuthLogin();
+        showAuthError('网络错误，请检查连接');
+        console.error('Login error:', error);
+      }
+    }
+
+    // 注册处理
+    async function handleAuthRegister(e) {
+      e.preventDefault();
+      hideAuthError();
+      showAuthLoading();
+
+      const username = document.getElementById('regUsername').value;
+      const password = document.getElementById('regPassword').value;
+      const className = document.getElementById('regClassName').value;
+      const email = document.getElementById('regEmail').value;
+
+      try {
+        const response = await fetch(`${API_BASE}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password, className, email })
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.data.token) {
+          authToken = data.data.token;
+          currentUser = data.data.user;
+          localStorage.setItem('auth_token', authToken);
+          localStorage.setItem('user_info', JSON.stringify(currentUser));
+          
+          // 隐藏登录界面，显示主应用
+          document.getElementById('authOverlay').classList.add('hidden');
+          document.getElementById('mainApp').classList.add('show');
+        } else {
+          hideAuthLoading();
+          showAuthRegister();
+          showAuthError(data.message || '注册失败');
+        }
+      } catch (error) {
+        hideAuthLoading();
+        showAuthRegister();
+        showAuthError('网络错误，请检查连接');
+        console.error('Register error:', error);
+      }
+    }
+
+    // 页面加载时检查登录状态
+    window.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        authToken = token;
+        // 验证token是否有效
+        fetch(`${API_BASE}/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            currentUser = data.data;
+            document.getElementById('authOverlay').classList.add('hidden');
+            document.getElementById('mainApp').classList.add('show');
+          } else {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_info');
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('user_info');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
