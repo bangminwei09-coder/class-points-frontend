@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>班级积分管理系统 - 云端版</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #authContainer {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    #appContainer {
+      display: none;
+      width: 100%;
+      height: 100vh;
+    }
+
+    #appFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #eee;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      color: #666;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #eee;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .hint {
+      text-align: center;
+      margin-top: 20px;
+      color: #999;
+      font-size: 12px;
+    }
+
+    .error {
+      background: #fee;
+      color: #c33;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #registerForm {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="authContainer">
+    <h1>📚 班级积分管理系统</h1>
+    <p class="subtitle">教师登录 · 云端同步</p>
+
+    <div class="tabs">
+      <div class="tab active" onclick="showLogin()">登录</div>
+      <div class="tab" onclick="showRegister()">注册</div>
+    </div>
+
+    <div class="error" id="errorMsg"></div>
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p style="margin-top: 10px; color: #666;">加载中...</p>
+    </div>
+
+    <!-- 登录表单 -->
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>用户名</label>
+        <input type="text" id="loginUsername" required placeholder="请输入用户名">
+      </div>
+      <div class="form-group">
+        <label>密码</label>
+        <input type="password" id="loginPassword" required placeholder="请输入密码">
+      </div>
+      <button type="submit" class="btn">登录</button>
+      <p class="hint">💡 提示：数据保存在云端，可在任何设备访问</p>
+    </form>
+
+    <!-- 注册表单 -->
+    <form id="registerForm" onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label>用户名</label>
+        <input type="text" id="regUsername" required placeholder="请输入用户名">
+      </div>
+      <div class="form-group">
+        <label>密码</label>
+        <input type="password" id="regPassword" required placeholder="请输入密码（至少6位）" minlength="6">
+      </div>
+      <div class="form-group">
+        <label>班级名称</label>
+        <input type="text" id="regClassName" required placeholder="例如：四年级三班">
+      </div>
+      <div class="form-group">
+        <label>邮箱（选填）</label>
+        <input type="email" id="regEmail" placeholder="用于找回密码">
+      </div>
+      <button type="submit" class="btn">注册</button>
+      <p class="hint">💡 注册后即可开始使用云端同步功能</p>
+    </form>
+  </div>
+
+  <div id="appContainer">
+    <iframe id="appFrame" src="班级积分管理系统.html"></iframe>
+  </div>
+
+  <script>
+    const API_BASE = 'https://class-points-backend-production.up.railway.app/api';
+
+    function showLogin() {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('registerForm').style.display = 'none';
+      hideError();
+    }
+
+    function showRegister() {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('registerForm').style.display = 'block';
+      hideError();
+    }
+
+    function showError(msg) {
+      const errorEl = document.getElementById('errorMsg');
+      errorEl.textContent = msg;
+      errorEl.style.display = 'block';
+    }
+
+    function hideError() {
+      document.getElementById('errorMsg').style.display = 'none';
+    }
+
+    function showLoading() {
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('registerForm').style.display = 'none';
+    }
+
+    function hideLoading() {
+      document.getElementById('loading').style.display = 'none';
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      hideError();
+      showLoading();
+
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const response = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.data.token) {
+          localStorage.setItem('auth_token', data.data.token);
+          localStorage.setItem('user_info', JSON.stringify(data.data.user));
+          
+          // 显示主应用
+          document.getElementById('authContainer').style.display = 'none';
+          document.getElementById('appContainer').style.display = 'block';
+          document.body.style.background = '#f5f7fb';
+        } else {
+          hideLoading();
+          showLogin();
+          showError(data.message || '登录失败');
+        }
+      } catch (error) {
+        hideLoading();
+        showLogin();
+        showError('网络错误，请检查连接');
+        console.error('Login error:', error);
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      hideError();
+      showLoading();
+
+      const username = document.getElementById('regUsername').value;
+      const password = document.getElementById('regPassword').value;
+      const className = document.getElementById('regClassName').value;
+      const email = document.getElementById('regEmail').value;
+
+      try {
+        const response = await fetch(`${API_BASE}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password, className, email })
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.data.token) {
+          localStorage.setItem('auth_token', data.data.token);
+          localStorage.setItem('user_info', JSON.stringify(data.data.user));
+          
+          // 显示主应用
+          document.getElementById('authContainer').style.display = 'none';
+          document.getElementById('appContainer').style.display = 'block';
+          document.body.style.background = '#f5f7fb';
+        } else {
+          hideLoading();
+          showRegister();
+          showError(data.message || '注册失败');
+        }
+      } catch (error) {
+        hideLoading();
+        showRegister();
+        showError('网络错误，请检查连接');
+        console.error('Register error:', error);
+      }
+    }
+
+    // 检查是否已登录
+    window.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        // 验证token是否有效
+        fetch(`${API_BASE}/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
+            document.body.style.background = '#f5f7fb';
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem('auth_token');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
