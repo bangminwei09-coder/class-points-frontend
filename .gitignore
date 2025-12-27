@@ -15,6 +15,7 @@ backend/
 !old-version.html
 !index-cloud.html
 !cloud-version.html
+!hybrid-cloud.html
 
 # 文档文件（可选，如果想保留就删除下面这行）
 *.md
